@@ -6,7 +6,7 @@ This project provides a framework for testing and systematically comparing multi
 
 - **`main.py`**: The main analysis script. **This is the only file you need to run.** It automatically iterates through all defined algorithms and asset classes.
 - **`algorithms.py`**: A dedicated module containing the implementation of all weighting algorithms (e.g., AA, SEAA, FTL, Hedge). New algorithms should be added here.
-- **`portfolio_engine.py`**: The core mathematical engine for portfolio construction, risk management, and cost calculation.
+- **`portfolio_engine.py`**: The engine for portfolio construction, risk management, and cost calculation.
 - **`data_loader.py`**: A centralized module for loading all required data from pickle files.
 
 ## Prerequisites
