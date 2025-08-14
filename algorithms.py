@@ -95,15 +95,17 @@ class SEAA_Algorithm(BaseWeightingAlgorithm):
         for i in range(t):
             w = _robust_normalize(w)
             
-            # 1. Mix BEFORE the performance update
+            # 1. Mix weights BEFORE the performance update.
             if n > 1:
                 w = (1 - self.alpha) * w + self.alpha / (n - 1) * (1 - w)
             
             temp[i,] = w
             
-            # 2. Apply the POWER update rule. This is now the ONLY performance update.
+            # The combined prediction 'g'.
+            g = _subs(w, experts[i,], self.eta, self.minY, self.maxY)
+
+            # 2. Update weights using the POWER rule, based on each expert's individual loss.
             loss = (experts[i,] - actual[i]) ** 2
-            # Add a small epsilon to prevent 0**loss issues
             w = (w + 1e-9) ** loss
         return temp
 
@@ -176,3 +178,6 @@ class FoundationModel_Placeholder(BaseWeightingAlgorithm):
                     final_conviction.loc[best_signals_for_asset.index, asset] = lookup_values
         final_conviction = final_conviction.infer_objects(copy=False).ffill().fillna(0.0)
         return final_conviction.astype(float)
+    
+
+
