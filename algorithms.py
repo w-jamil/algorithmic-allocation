@@ -63,21 +63,27 @@ class AA_Algorithm(BaseWeightingAlgorithm):
     """Implements the standard 'AA' (Aggregating Algorithm)."""
     def __init__(self, **kwargs):
         super().__init__(name="AA", **kwargs)
+
     def _run_update_loop(self, experts, actual):
         n = np.size(experts, axis=1); t = np.size(experts, axis=0)
         w = np.ones(n); temp = np.zeros((t, n))
         for i in range(t):
             w = _robust_normalize(w)
             temp[i,] = w
+            
+            # --- CONCEPTUAL STEP ---
+            # The purpose of the algorithm is to produce a combined prediction 'g'.
+            # While 'g' itself is not used to update the weights, it is the algorithm's output.
+            g = _subs(w, experts[i,], self.eta, self.minY, self.maxY)
+
+            # --- WEIGHT UPDATE STEP ---
+            # The weights are updated based on the performance of each *individual expert's prediction*
+            # (`experts[i,]`) against the *actual outcome* (`actual[i]`).
             w = w * np.exp(-self.eta * (experts[i,] - actual[i]) ** 2)
         return temp
 
 class SEAA_Algorithm(BaseWeightingAlgorithm):
-    """
-    Implements your specific 'SEAA' (Specialist Expert Aggregating Algorithm) variant.
-    LOGIC FIX: This now uses ONLY the power update rule for performance, making it
-    distinct from Hedge/FixedShare which use the exponential rule.
-    """
+    """Implements the 'SEAA' (Specialist Expert Aggregating Algorithm) variant."""
     def __init__(self, alpha=0.2, eta=2.0, **kwargs):
         super().__init__(name="SEAA", eta=eta, **kwargs)
         self.alpha = alpha
