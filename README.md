@@ -95,7 +95,7 @@ from algorithms import (
     MyNewAlgorithm  # <-- ADD THIS LINE
 )
 ```
-Add it to the `**ALGORITHM_FACTORY dictionary**`:
+Add it to the `ALGORITHM_FACTORY dictionary`:
 This makes the main script aware of your new algorithm and tells it how to initialize it.
 
 ```bash
