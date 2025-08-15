@@ -43,7 +43,7 @@ This framework expects four pre-processed data files in pickle format (.pkl) to 
 
 **`returns.pkl`**: A dictionary of DataFrames containing asset returns for each class.
 
-signal_risk_adj.pkl: A dictionary of DataFrames containing the predictive signals from various "experts" for each asset.
+**`signal_risk_adj.pkl`**: A dictionary of DataFrames containing the predictive signals from various "experts" for each asset.
 
 **`t_cost.pkl`**: A dictionary of Series containing the estimated transaction costs for each asset.
 
@@ -63,11 +63,10 @@ The script will print its progress, display the final performance tables in the 
 
 The framework is designed to be easily extended. To add your own custom algorithm, follow these two steps:
 
-Step 1: Implement the Algorithm in algorithms.py
+Step 1: Implement the Algorithm in `algorithms.py`
 
-Create a new class in algorithms.py that inherits from the BaseWeightingAlgorithm class. You must implement the _run_update_loop method.
+Create a new class in algorithms.py that inherits from the `BaseWeightingAlgorithm` class. You must implement the _run_update_loop method. In `algorithms.py`:
 
-In algorithms.py
 ```bash
 class MyNewAlgorithm(BaseWeightingAlgorithm):
     """A brief description of your new algorithm."""
@@ -83,9 +82,9 @@ class MyNewAlgorithm(BaseWeightingAlgorithm):
         pass
 ```
 
-Step 2: Register the New Algorithm in main.py
+Step 2: Register the New Algorithm in `main.py`
 
-Open main.py and make two small changes. Import your new class:
+Open `main.py` and make two small changes. Import your new class:
 
 ```bash
 from algorithms import (
