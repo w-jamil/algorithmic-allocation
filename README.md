@@ -29,9 +29,7 @@ The project is organized into clear, single-responsibility modules:
 -   **`portfolio_engine.py`**: The engine for portfolio construction, risk management, and cost calculation.
 -   **`data_loader.py`**: A centralized module for loading all required data from pickle files.
 
-## Prerequisites
-
-### 1. Dependencies
+### Dependencies
 You will need Python 3.9+ and the following libraries. You can install them using pip:
 
 ```bash
