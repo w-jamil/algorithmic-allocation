@@ -6,12 +6,12 @@ import sys
 # Import from your organized project files
 import portfolio_engine
 import data_loader
+# --- MODIFIED: Corrected the imports to match the available algorithms ---
 from algorithms import (
     AA_Algorithm, 
     SEAA_Algorithm, 
     FollowTheLeader, 
     HedgeAlgorithm, 
-    LLR_Inspired_Hedge, 
     FoundationModel_Placeholder
 )
 
@@ -83,21 +83,18 @@ if __name__ == '__main__':
         ASSET_CLASSES = ['fx', 'rates', 'equity']
         
         # --- Hyperparameter Tuning Dictionary ---
-        # This single dictionary now controls the parameters for BOTH SEAA and FixedShare.
         TUNED_PARAMS = {
             'fx':     {'alpha': 0.2, 'eta': 2.0},
             'rates':  {'alpha': 0.5, 'eta': 1.0},
             'equity': {'alpha': 0.6, 'eta': 0.8}
         }
 
-        # --- Algorithm Factory ---
-        # This factory now uses the same TUNED_PARAMS for FixedShare and SEAA.
+        # --- Algorithm Factory as provided by user ---
         ALGORITHM_FACTORY = {
             "AA": lambda ac: AA_Algorithm(),
             "SEAA": lambda ac: SEAA_Algorithm(**TUNED_PARAMS.get(ac, {})),
             "FTL": lambda ac: FollowTheLeader(),
             "Hedge": lambda ac: HedgeAlgorithm(eta=2.0),
-            "LLR": lambda ac: LLR_Inspired_Hedge(eta=2.0),
             "Foundation": lambda ac: FoundationModel_Placeholder()
         }
 
@@ -144,40 +141,83 @@ if __name__ == '__main__':
         results_df = pd.DataFrame(all_results)
         
         sharpe_pivot = results_df.pivot_table(index='Algorithm', columns='Asset Class', values='Sharpe Ratio')
-        # ... (rest of the reporting is the same) ...
+        mean_ret_pivot = results_df.pivot_table(index='Algorithm', columns='Asset Class', values='Mean Return')
+        std_dev_pivot = results_df.pivot_table(index='Algorithm', columns='Asset Class', values='Std Dev')
+
 
         print("--- PERFORMANCE SUMMARY ---")
         print("\n** Annualized Sharpe Ratio **")
         print(sharpe_pivot.to_string(float_format="%.2f"))
-        # ... (print other tables) ...
+        print("\n** Annualized Mean Return **")
+        print(mean_ret_pivot.to_string(float_format="%.4f"))
+        print("\n** Annualized Volatility (Std Dev) **")
+        print(std_dev_pivot.to_string(float_format="%.4f"))
 
+
+        # ------------------- MODIFIED PLOTTING SECTION -------------------
         print("\nGenerating comparison plots...")
         plt.style.use('seaborn-v0_8-darkgrid')
         
         asset_classes_in_results = results_df['Asset Class'].unique()
-        for ac_upper in asset_classes_in_results:
-            plt.figure(figsize=(15, 8))
+
+        # 1. Create a figure and a set of subplots (axes) BEFORE the loop.
+        fig, axes = plt.subplots(
+            nrows=1, 
+            ncols=len(asset_classes_in_results), 
+            figsize=(22, 7), 
+            constrained_layout=True,
+            sharey=True  # Share the Y-axis range across subplots
+        )
+        fig.suptitle("Cumulative Wealth Comparison Across Asset Classes", fontsize=18, weight='bold')
+
+        # Handle the case where there is only one asset class (axes is not an array)
+        if len(asset_classes_in_results) == 1:
+            axes = [axes]
+
+        # 2. Loop through each asset class and its corresponding subplot axis.
+        for i, ac_upper in enumerate(asset_classes_in_results):
+            ax = axes[i] # Select the subplot for the current asset class
+            
             ac_results = [res for res in all_results if res['Asset Class'] == ac_upper]
             
             if not ac_results:
                 continue
 
+            # 3. Plot all algorithm results on the selected subplot.
             for result in ac_results:
                 wealth_index = (1 + result['Returns']).cumprod()
                 label = f"{result['Algorithm']} (SR: {result['Sharpe Ratio']:.2f})"
-                plt.plot(wealth_index.index, wealth_index, label=label)
+                ax.plot(wealth_index.index, wealth_index, label=label)
 
-            plt.legend(title='Algorithm (Sharpe Ratio)', loc='upper left')
-            plt.title(f"Cumulative Wealth Comparison for {ac_upper} Asset Class", fontsize=16)
-            plt.ylabel("Cumulative Wealth (Log Scale)")
-            plt.xlabel("Date")
-            plt.yscale('log')
-            plt.grid(True, which="both", ls="--")
-            plt.tight_layout()
-            plt.show()
+            # 4. Customize the specific subplot.
+            ax.legend(title='Algorithm (Sharpe Ratio)', loc='upper left', fontsize='small')
+            ax.set_title(f"Asset Class: {ac_upper}", fontsize=14)
+            ax.set_xlabel("Date")
+            ax.set_yscale('log')
+            ax.grid(True, which="both", ls="--")
+            
+            # --- CUSTOMIZATIONS AS REQUESTED ---
+            # Apply smaller font size to all ticks on this subplot
+            ax.tick_params(axis='both', which='major', labelsize=9)
+
+            # Only show the y-axis label on the first plot (i=0)
+            if i == 0:
+                ax.set_ylabel("Cumulative Wealth (Log Scale)")
+            else:
+                # For other plots, hide the y-axis label and its tick labels
+                ax.set_ylabel("")
+                ax.tick_params(axis='y', labelleft=False)
+        
+        # 5. Handle any remaining (unused) subplots.
+        for j in range(len(asset_classes_in_results), len(axes)):
+            axes[j].set_visible(False)
+            
+        # 6. Show the single, combined figure.
+        plt.show()
 
     except FileNotFoundError as e:
         print(f"\nFATAL ERROR: A required data file was not found: {e.filename}")
+        print("Please ensure your data_loader is configured correctly.")
     except Exception as e:
         print(f"\nAn unexpected error occurred: {e}")
         import traceback
