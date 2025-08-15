@@ -1,6 +1,7 @@
+
 # Portfolio Strategy Engine & Algorithm Comparison Framework
 
-This project provides a robust framework for backtesting and systematically comparing multiple portfolio weighting algorithms across different asset classes. Data and portfolio engine is due to the quants I interacted with during the time in industry.
+This project provides a robust framework for backtesting and systematically comparing multiple portfolio weighting algorithms across different asset classes. It is designed for quantitative researchers and developers looking to implement and evaluate strategies based on online machine learning and game-theoretic concepts.
 
 The core of the project is a modular engine that separates data loading, algorithm implementation, and portfolio construction, making it easy to extend and test new ideas. The data and portfolio engine are inspired by best practices from the quantitative finance industry.
 
