@@ -48,7 +48,7 @@ This framework expects four pre-processed data files in pickle format (.pkl) to 
 
 **`holding_period.pkl`**: A dictionary of Series specifying the smoothing window (in days) for the final conviction signal for each asset.
 
-### How to Run the Full Analysis
+### Run Full Analysis
 
 No command-line arguments are needed. Simply execute the main script from your terminal:
 
@@ -58,7 +58,7 @@ python main.py
 
 The script will print its progress, display the final performance tables in the console, and then show the cumulative wealth plots.
 
-### Adding a New Algorithm
+### Adding Custom New Algorithm
 
 The framework is designed to be easily extended. To add your own custom algorithm, follow these two steps:
 
