@@ -107,3 +107,5 @@ ALGORITHM_FACTORY = {
     "Foundation": lambda ac: FoundationModel_Placeholder(),
     "MyNewAlgo": lambda ac: MyNewAlgorithm(my_param=0.5) } #<-- ADD THIS LINE
 ```
+
+Contributions are welcome. If you encounter any bugs, have feature requests, or wish to contribute code, please feel free to open an issue or submit a pull request on the GitHub repository.
